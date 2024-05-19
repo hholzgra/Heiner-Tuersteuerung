@@ -1,3 +1,7 @@
+Project download:
+git clone git@wilson.ipv64.net:knackwurst/heinerv5.git
+
+
 sreensaver optionen in .bashrc gesetzt
 
 
