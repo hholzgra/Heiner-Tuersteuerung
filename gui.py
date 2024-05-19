@@ -109,6 +109,8 @@ class GUI(tk.Tk, GuiEventProducer):
 
         self.build()
 
+        self.black_screen = FakeBlackscreen(self, seconds=20)
+
     def register(self, consumer: GuiEventConsumer):
         self.ConsumerList.append(consumer)
 
@@ -117,6 +119,7 @@ class GUI(tk.Tk, GuiEventProducer):
 
     def event_button_click(self, event: tk.Event, eventbutton: int):
         gui_event: GUI_EVENTS = None
+        self.black_screen.mausklick()
         # Screen 800x640 .. Button-Tile 800x160
         # Unterer rechter 100x100 Bereich fuer Sonderfunktion auswerten
         # ggf. Keypad öffnen
@@ -209,6 +212,7 @@ class GUI(tk.Tk, GuiEventProducer):
         self.keypad = KeyPad(
             self,
             beeper_strg=self.beeper_strg,
+            callback_any_btn_clicked=self.black_screen.mausklick,
             callback_oeffner=lambda evt=GUI_EVENTS.TUER_OEFFNER: self.publish_event(
                 evt
             ),
@@ -269,6 +273,7 @@ class KeyPad(tk.Toplevel):
         self,
         master,
         beeper_strg: BeeperSteuerung,
+        callback_any_btn_clicked: callable,
         keypad_rows: int = 4,
         keypad_columns: int = 6,
         callback_oeffner: callable = None,
@@ -284,6 +289,8 @@ class KeyPad(tk.Toplevel):
         self.master = master
 
         self.beeper_strg = beeper_strg
+
+        self.callback_any_btn_clicked = callback_any_btn_clicked
 
         # Titelzeile entfernen
         self.overrideredirect(True)
@@ -340,6 +347,8 @@ class KeyPad(tk.Toplevel):
         frame.pack()
 
     def digit_clicked(self, value):
+        
+        self.callback_any_btn_clicked() # zieht den timer des `Fake Blackscreen` bei jedem Klick neu auf
 
         self.beeper_strg.TriggerBeeper(Ansteuerzeit_Sek=0.1)
 
@@ -624,7 +633,7 @@ class FakeBlackscreen(tk.Toplevel):
     Soll verhindern das wenn man auf einen abgeschalteten Bildschirm tippt ein Event ausloest.
     """
 
-    def __init__(self, master, seconds: int = 5, bg_color: str = "#000000") -> None:
+    def __init__(self, master, seconds: int, bg_color: str = "#000000") -> None:
         super().__init__(master=master)
         self.master = master
 
@@ -636,7 +645,32 @@ class FakeBlackscreen(tk.Toplevel):
         self.bind("<Button-1>", self.mausklick)
 
         frame = tk.Frame(self, width=800, height=480, background=bg_color)
+        label = tk.Label(frame, background=bg_color)
+        label.pack(expand=True, fill="both")
         frame.place(relwidth=1.0, relheight=1.0, relx=0.5, rely=0.5, anchor="center")
 
-    def mausklick(self, event):
-        pass
+        self.lift(aboveThis=master)
+        self.attributes("-topmost", True)
+
+        self.Timer = 0
+        self.timer_countdown()
+
+
+    def mausklick(self, event=None):
+        '''Zieht den Timer fuer den Blackscreen neu auf'''
+        # self.master.lift(aboveThis=self)
+        self.withdraw() # Hide Window
+        self.Timer = self.seconds
+
+    def timer_countdown(self):
+        
+        if self.Timer != 0:
+            self.Timer -= 1
+            self.Timer = max(0, self.Timer)
+
+            if self.Timer == 0:
+                self.deiconify() # Show again
+        
+        self.master.after(1000, self.timer_countdown)
+
+
