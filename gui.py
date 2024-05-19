@@ -361,7 +361,8 @@ class BlockingWindows(tk.Toplevel):
         frame = tk.Frame(self, width=800, height=480, background=bg_color)
         frame.place(relwidth=1.0, relheight=1.0, relx=0.5, rely=0.5, anchor="center")
 
-        if subtitle == "": # Einzeilig
+        # Einzeiliger Text (Bild Optional)
+        if subtitle == "": 
             label = tk.Label(frame, text=self.title, background=bg_color, foreground=fg_color, font=('Helvetica 50 bold'))
             label.place(relwidth=1.0, relheight=1.0, relx=0.5, rely=0.5, anchor="center")
 
@@ -369,7 +370,8 @@ class BlockingWindows(tk.Toplevel):
                 label_bild = tk.Label(frame, image=bild, background=bg_color, )
                 label_bild.place(width=bild.width(), height=bild.height(), x=400, y=0, anchor="n")
 
-        else: # Mehrzeilig
+        # Mehrzeiliger Text (Bild Optional)
+        else: 
             label = tk.Label(frame, text=self.title, background=bg_color, foreground=fg_color, font=('Helvetica 50 bold'))
             label.pack(fill="x", pady=50)
             label2 = tk.Label(frame, text=subtitle.replace("  ", ""), background=bg_color, foreground=fg_color, font=('Helvetica 40 bold'))
@@ -377,7 +379,7 @@ class BlockingWindows(tk.Toplevel):
 
             if bild != None:
                 label_bild = tk.Label(frame, image=bild, background=bg_color, )
-                label_bild.place(width=bild.width(), height=bild.height(), x=0, y=0)
+                label_bild.place(width=bild.width(), height=bild.height(), x=30, y=0)
 
 
 
