@@ -1,0 +1,12 @@
+[tuer]
+zugangs_code = []
+herunterfahren = []
+
+[telegram]
+TOKEN = ""
+CHAT_ID = ""
+
+[namen] 
+oben = ""
+mitte = ""
+unten = ""
