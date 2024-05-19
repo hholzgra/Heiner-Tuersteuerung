@@ -131,7 +131,7 @@ parser = argparse.ArgumentParser(description='')
 parser.add_argument('--demomodus', action='store_true', help='Deaktiviert Dinge die auf einem nicht-PI nicht funktionieren und erzeugt zusaetzliche Consolen Ausgaben')
 
 global args
-args = parser.parse_args()
+args, unknown = parser.parse_known_args()
 
 
 signal.signal(signal.SIGINT, endProcess)

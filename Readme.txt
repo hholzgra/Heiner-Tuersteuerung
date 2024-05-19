@@ -3,8 +3,13 @@ in homeverzeichnis wechseln `/home/raspberry/`
 git clone git@wilson.ipv64.net:knackwurst/heinerv5.git system_services_tuer
 
 
+# Fehlersuche
+Falls im syslog nichts steht dann steht vielleicht hier was:
+/home/pi/.cache/lxsession/LXDE-pi/run.log
+
 
 sreensaver optionen in .bashrc gesetzt
+
 
 
 systemd service script 
