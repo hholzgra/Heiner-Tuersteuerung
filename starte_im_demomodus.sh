@@ -1,0 +1,1 @@
+/bin/python tuer_klingel_GUI_mitRelais.py --demomodus

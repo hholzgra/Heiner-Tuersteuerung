@@ -1,0 +1,19 @@
+v4 -> v5
+--------
+Oeffnungszeit fuer Tuer auf 1 Sekunde gestellt, reicht das?
+
+smbus in der Relaisklasse wieder aktivieren
+telegramm requests funktion wieder aktivieren
+Maus im GUI wieder deaktivieren
+
+- Bilder als visuelle Bestätigung der Betätigung
+
+- Der Beeper kommt jetzt auch beim eintippen des Codes
+
+- Der Beeper und die Relais können retriggert werden. 
+  D.h. bei mehrfachem Drücken wird nur ein Event ausgelöst und durch schneller erneutes Drücken kann die Dauer bis zum abschalten verlängert werden.
+
+- Es gibt ein Shellskript um einen neuen PI neu aufzusetzen
+
+- Animiertes Bild wenn eine Klingel oder der Briefkasten Button gedrückt wurde
+  Oder Alternativ ein Vollbild Popup mit Text (funktioniert und Linux besser da dort die PNG-Transparenz nicht funktioniert)

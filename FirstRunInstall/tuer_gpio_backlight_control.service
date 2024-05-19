@@ -1,0 +1,12 @@
+[Unit]
+Description=Horcht auf dem GPIO 19 und schaltet dann den screensaver ab
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/usr/bin/python /home/raspberry/system_services_tuer/tuer_gpio_backlight_control.py
+User=raspberry
+
+[Install]
+WantedBy=multi-user.target

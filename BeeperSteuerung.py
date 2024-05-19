@@ -1,0 +1,55 @@
+import threading
+import time
+
+
+class BeeperSteuerung(threading.Thread):
+
+    DEFAULT_ANSTEUERZEIT_SEK = 0.5
+
+    def __init__(self, stop_event:threading.Event, demo_modus=False) -> None:
+        super().__init__()
+
+        self.demo_modus = demo_modus
+        self.stop_event = stop_event
+
+        self.BeeperpinNr = 15
+
+        if not self.demo_modus:
+            import RPi.GPIO as GPIO
+            GPIO.setmode(GPIO.BOARD)
+            GPIO.setup(self.BeeperpinNr, GPIO.OUT)
+
+        self.Timer = 0
+
+
+        
+    def run(self):
+        
+        while not self.stop_event.is_set():
+            
+            time.sleep(0.01)
+            if self.Timer > 0:
+                self.Timer = self.Timer-1 # der Timerwert entspricht 10ms Raster
+                if self.Timer == 0:
+                    # Timer hat Null erreicht, Relais abschalten
+                    self._BeeperOFF()
+
+    def TriggerBeeper(self, Ansteuerzeit_Sek = DEFAULT_ANSTEUERZEIT_SEK) -> None:
+        '''Schaltet ein Relais ein und zieht den Abschalttimer wieder auf'''
+        self.Timer = Ansteuerzeit_Sek * 100  # Skalierung auf 10ms Raster
+        self._BeeperON()
+        if self.demo_modus:
+            print(f"Starte Beeper mit {Ansteuerzeit_Sek} Sek")
+
+    def _BeeperOFF(self):
+        if self.demo_modus:
+            print(f"Beeper OFF")
+        else:
+            GPIO.output(self.BeeperpinNr, True)
+
+    def _BeeperON(self):
+        if self.demo_modus:
+            # print(f"Beeper ON")
+            pass
+        else:
+            GPIO.output(self.BeeperpinNr, False)
