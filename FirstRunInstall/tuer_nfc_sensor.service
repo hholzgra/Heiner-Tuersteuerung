@@ -1,0 +1,12 @@
+[Unit]
+Description=Horcht am NFC Sensor und schaltet das Relais
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/usr/bin/python /home/raspberry/system_services_tuer/tuer_nfc_sensor.py
+User=raspberry
+
+[Install]
+WantedBy=multi-user.target
