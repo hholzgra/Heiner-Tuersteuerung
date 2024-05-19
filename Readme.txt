@@ -1,5 +1,7 @@
 Project download:
-git clone git@wilson.ipv64.net:knackwurst/heinerv5.git
+in homeverzeichnis wechseln `/home/raspberry/`
+git clone git@wilson.ipv64.net:knackwurst/heinerv5.git system_services_tuer
+
 
 
 sreensaver optionen in .bashrc gesetzt
