@@ -1,5 +1,9 @@
 import threading
 import time
+import platform
+
+if platform.system() != "Windows":
+    import RPi.GPIO as GPIO
 
 
 class BeeperSteuerung(threading.Thread):
@@ -15,7 +19,6 @@ class BeeperSteuerung(threading.Thread):
         self.BeeperpinNr = 15
 
         if not self.demo_modus:
-            import RPi.GPIO as GPIO
             GPIO.setmode(GPIO.BOARD)
             GPIO.setup(self.BeeperpinNr, GPIO.OUT)
 
