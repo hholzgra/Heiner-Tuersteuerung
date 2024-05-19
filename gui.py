@@ -371,9 +371,9 @@ class BlockingWindows(tk.Toplevel):
 
         else: # Mehrzeilig
             label = tk.Label(frame, text=self.title, background=bg_color, foreground=fg_color, font=('Helvetica 50 bold'))
-            label.pack(fill="x", pady=40)
+            label.pack(fill="x", pady=50)
             label2 = tk.Label(frame, text=subtitle.replace("  ", ""), background=bg_color, foreground=fg_color, font=('Helvetica 40 bold'))
-            label2.pack(fill="x", pady=40)
+            label2.pack(fill="x", pady=70)
 
             if bild != None:
                 label_bild = tk.Label(frame, image=bild, background=bg_color, )
