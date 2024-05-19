@@ -10,7 +10,7 @@ class BeeperSteuerung(threading.Thread):
 
     DEFAULT_ANSTEUERZEIT_SEK = 0.5
 
-    def __init__(self, stop_event:threading.Event, demo_modus=False) -> None:
+    def __init__(self, stop_event: threading.Event, demo_modus=False) -> None:
         super().__init__()
 
         self.demo_modus = demo_modus
@@ -24,21 +24,19 @@ class BeeperSteuerung(threading.Thread):
 
         self.Timer = 0
 
-
-        
     def run(self):
-        
+
         while not self.stop_event.is_set():
-            
+
             time.sleep(0.01)
             if self.Timer > 0:
-                self.Timer = self.Timer-1 # der Timerwert entspricht 10ms Raster
+                self.Timer = self.Timer - 1  # der Timerwert entspricht 10ms Raster
                 if self.Timer == 0:
                     # Timer hat Null erreicht, Relais abschalten
                     self._BeeperOFF()
 
-    def TriggerBeeper(self, Ansteuerzeit_Sek = DEFAULT_ANSTEUERZEIT_SEK) -> None:
-        '''Schaltet ein Relais ein und zieht den Abschalttimer wieder auf'''
+    def TriggerBeeper(self, Ansteuerzeit_Sek=DEFAULT_ANSTEUERZEIT_SEK) -> None:
+        """Schaltet ein Relais ein und zieht den Abschalttimer wieder auf"""
         self.Timer = Ansteuerzeit_Sek * 100  # Skalierung auf 10ms Raster
         self._BeeperON()
         if self.demo_modus:

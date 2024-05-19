@@ -9,41 +9,28 @@ pinNr = 19
 
 GPIO.setmode(GPIO.BOARD)
 
-GPIO.setup(pinNr, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+GPIO.setup(pinNr, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-#screensaver temporär auf 20s einstellen:
+# screensaver temporär auf 20s einstellen:
 os.system("xset s 20")
 os.system("xset dpms 20 20 20")
 
 while True:
-	input_value = GPIO.input(pinNr)
-	
-	if input_value == False:
-		#print("Taster gedrueckt")
-		
-		
-		# screensaver temporär auf 20s einstellen:
-		# xset s 20
-		# xset dpms 20 20 20		
-		
-		os.system("xset -display :0.0 dpms force on")
-		
-	time.sleep(0.1)
+    input_value = GPIO.input(pinNr)
 
+    if input_value == False:
+        # print("Taster gedrueckt")
 
+        # screensaver temporär auf 20s einstellen:
+        # xset s 20
+        # xset dpms 20 20 20
 
+        os.system("xset -display :0.0 dpms force on")
 
-
-
-
-
-
-
-
+    time.sleep(0.1)
 
 
 # Alternative ohne 'dpms energiesparmodus':
 # Braucht root (sudo)
-	#with open("/sys/class/backlight/10-0045/bl_power", "w") as f:
-	#	f.write("0")
-		
+# with open("/sys/class/backlight/10-0045/bl_power", "w") as f:
+# 	f.write("0")
