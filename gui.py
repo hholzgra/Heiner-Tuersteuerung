@@ -409,7 +409,11 @@ class KeyPad(tk.Toplevel):
 
 
 class BlockingWindows(tk.Toplevel):
-
+    '''
+    Vollbild Popup das einen Text (Einzeilig oder Mehrzeilig, optional mit einem Bild)
+    enthalten kann und nach der angegebenen Zeit wieder verschwindet.
+    '''
+    
     def __init__(
         self,
         master,
@@ -488,6 +492,7 @@ class BlockingWindows(tk.Toplevel):
 
 
 class BildPopup(tk.Toplevel):
+    '''Poppt ein animiertes Bild an einer beliebigen x, y Position auf'''
 
     def __init__(
         self, master, bild: PhotoImage, x_pos, y_pos, seconds=3, x_anim_offset_px=10
