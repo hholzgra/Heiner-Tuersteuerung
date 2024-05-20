@@ -15,10 +15,12 @@ GPIO.setup(pinNr, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 os.system("xset s 20")
 os.system("xset dpms 20 20 20")
 
+input_prev_state = GPIO.input(pinNr)
+
 while True:
     input_value = GPIO.input(pinNr)
 
-    if input_value == False:
+    if input_value == False and input_prev_state == True:
         # print("Taster gedrueckt")
 
         # screensaver temporär auf 20s einstellen:
@@ -26,6 +28,9 @@ while True:
         # xset dpms 20 20 20
 
         os.system("xset -display :0.0 dpms force on")
+
+    
+    input_prev_state = input_value
 
     time.sleep(0.1)
 
