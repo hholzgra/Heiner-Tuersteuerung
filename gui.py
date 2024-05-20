@@ -21,6 +21,11 @@ from tkinter import PhotoImage
 from BeeperSteuerung import BeeperSteuerung
 import threading
 
+if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
+    import RPi.GPIO as GPIO
+    pinNr = 19
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(pinNr, GPIO.IN, pull_up_down=GPIO.PUD_UP)    # Achtung dies Setup wird auch vom BacklighControll Service gemacht!!!
 
 class GUI_EVENTS(Enum):
     KLINGEL_1 = 0
@@ -641,7 +646,7 @@ class FakeBlackscreen(tk.Toplevel):
         self.overrideredirect(True)
         self.geometry("800x480")
         self.config(cursor="none", background=bg_color)
-        self.seconds = seconds
+        self.milliseconds = seconds * 1000
         self.bind("<Button-1>", self.mausklick)
 
         frame = tk.Frame(self, width=800, height=480, background=bg_color)
@@ -652,6 +657,9 @@ class FakeBlackscreen(tk.Toplevel):
         self.lift(aboveThis=master)
         self.attributes("-topmost", True)
 
+        if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
+            self.input_prev_state = GPIO.input(pinNr)
+
         self.Timer = 0
         self.timer_countdown()
 
@@ -660,17 +668,25 @@ class FakeBlackscreen(tk.Toplevel):
         '''Zieht den Timer fuer den Blackscreen neu auf'''
         # self.master.lift(aboveThis=self)
         self.withdraw() # Hide Window
-        self.Timer = self.seconds
+        self.Timer = self.milliseconds
 
     def timer_countdown(self):
+
+        if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
+            # Retriggern wenn der Sensor Bewegung meldet (Flankenauswertung)
+            input_value = GPIO.input(pinNr)
+            if input_value == False and self.input_prev_state == True:
+                self.Timer = self.milliseconds        
+            self.input_prev_state = input_value
+
         
         if self.Timer != 0:
-            self.Timer -= 1
+            self.Timer -= 10 # Aufruf Raster beachten
             self.Timer = max(0, self.Timer)
 
-            if self.Timer == 0:
+            if self.Timer <= 0:
                 self.deiconify() # Show again
         
-        self.master.after(1000, self.timer_countdown)
+        self.master.after(100, self.timer_countdown)
 
 
