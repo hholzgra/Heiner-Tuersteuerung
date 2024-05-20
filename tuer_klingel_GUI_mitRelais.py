@@ -18,7 +18,7 @@ import platform
 import logging
 import traceback
 
-if platform.system() != "Windows":
+if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
     from systemd.journal import JournalHandler
 
     # systemd logger
