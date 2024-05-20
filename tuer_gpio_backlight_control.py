@@ -9,7 +9,7 @@ pinNr = 19
 
 GPIO.setmode(GPIO.BOARD)
 
-GPIO.setup(pinNr, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(pinNr, GPIO.IN, pull_up_down=GPIO.PUD_UP) # Achtung dies Setup wird auch vom gui gemacht (Fake Blackscreen)
 
 # screensaver temporär auf 20s einstellen:
 os.system("xset s 20")
