@@ -502,7 +502,7 @@ class BildPopup(tk.Toplevel):
         geometry = f"{self.sidelength}x{self.sidelength}+{int(x_pos-self.sidelength/2)}+{int(y_pos-self.sidelength/2)}"
         self.geometry(geometry)
 
-        if platform.system() == "Windows":
+        if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
             background_color = "#424242"  # Unter Windows Transparenz Farbe
             self.attributes("-transparentcolor", background_color)
         else:

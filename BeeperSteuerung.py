@@ -2,7 +2,7 @@ import threading
 import time
 import platform
 
-if platform.system() != "Windows":
+if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
     import RPi.GPIO as GPIO
 
 
