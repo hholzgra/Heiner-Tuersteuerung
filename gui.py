@@ -677,7 +677,8 @@ class FakeBlackscreen(tk.Toplevel):
             # Retriggern wenn der Sensor Bewegung meldet (Flankenauswertung)
             input_value = GPIO.input(pinNr)
             if input_value == False and self.input_prev_state == True:
-                self.Timer = self.milliseconds        
+                self.withdraw() # Hide Window
+                self.Timer = self.milliseconds
             self.input_prev_state = input_value
 
         if self.Timer != 0:
