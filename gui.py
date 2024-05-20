@@ -137,24 +137,20 @@ class GUI(tk.Tk, GuiEventProducer):
 
             if gui_event == GUI_EVENTS.KLINGEL_1:
                 # BildPopup(self, seconds=3, x_pos=event.x, y_pos=y_berechnet, bild=self.Setup_GlockenBild) # event.y ist relativ zum jeweiligen "klingelschild" 3x 160px vertikal
-                BildPopup(self, seconds=3, x_pos=130, y_pos=100, bild=self.Setup_GlockenBild, bg_color="#222222", animate_transparency=False)
                 BlockingWindows(
                     self,
                     seconds=3,
                     title=f"Klingel",
-                    bg_color="#222222",
                     subtitle=self.Setup_list_namen[0],
-                    #bild=self.Setup_GlockenBild,
+                    bild=self.Setup_GlockenBild,
                 )
 
             elif gui_event == GUI_EVENTS.KLINGEL_2:
                 # BildPopup(self, seconds=3, x_pos=event.x, y_pos=y_berechnet, bild=self.Setup_GlockenBild) # event.y ist relativ zum jeweiligen "klingelschild" 3x 160px vertikal
-                BildPopup(self, seconds=3, x_pos=130, y_pos=100, bild=self.Setup_GlockenBild, bg_color="#222222", animate_transparency=False)
                 BlockingWindows(
                     self,
                     seconds=3,
                     title=f"Klingel",
-                    bg_color="#222222",
                     subtitle=self.Setup_list_namen[1],
                     bild=self.Setup_GlockenBild,
                 )
@@ -413,10 +409,6 @@ class KeyPad(tk.Toplevel):
 
 
 class BlockingWindows(tk.Toplevel):
-    '''
-    Vollbild Popup das einen Text (Einzeilig oder Mehrzeilig, optional mit einem Bild)
-    enthalten kann und nach der angegebenen Zeit wieder verschwindet.
-    '''
 
     def __init__(
         self,
@@ -496,14 +488,13 @@ class BlockingWindows(tk.Toplevel):
 
 
 class BildPopup(tk.Toplevel):
-    '''Poppt ein animiertes Bild an einer beliebigen x, y Position auf'''
 
     def __init__(
-        self, master, bild: PhotoImage, x_pos, y_pos, seconds=3, x_anim_offset_px=10, bg_color=None, animate_transparency=True
+        self, master, bild: PhotoImage, x_pos, y_pos, seconds=3, x_anim_offset_px=10
     ) -> None:
         super().__init__(master=master)
         self.master = master
-        self.animate_transparency = animate_transparency
+
         self.sidelength = bild.height() + x_anim_offset_px
 
         # Titelzeile entfernen
@@ -512,18 +503,12 @@ class BildPopup(tk.Toplevel):
         self.geometry(geometry)
 
         if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
-            if bg_color == None:
-                background_color = "#424242"  # Unter Windows Transparenz Farbe
-            else:
-                background_color = bg_color
+            background_color = "#424242"  # Unter Windows Transparenz Farbe
             self.attributes("-transparentcolor", background_color)
         else:
             # self.wm_attributes("-transparent", True) # Geht nicht
             # self.config(cursor="none", bg="systemTransparent") # Geht nicht
-            if bg_color == None:
-                background_color = "#111111"
-            else:
-                background_color = bg_color
+            background_color = "#111111"
             pass
 
         self.config(
@@ -626,21 +611,17 @@ class BildPopup(tk.Toplevel):
             )
 
             # Animation: Alpha
-            if self.animate_transparency: # ON / OFF
+            alpha_reduction_factor = anim_recall_ms / (
+                self.seconds * 1000
+            )  # Fuer lineares Alpha in z.B. 3 Sekunden von 1.0 auf 0.0 bei 10 ms Aufrufen
 
-                alpha_reduction_factor = anim_recall_ms / (
-                    self.seconds * 1000
-                )  # Fuer lineares Alpha in z.B. 3 Sekunden von 1.0 auf 0.0 bei 10 ms Aufrufen
-
-                self.animation_alpha = max(
-                    0.0,
-                    self.animation_alpha
-                    - alpha_reduction_factor
-                    + (time.time_ns() - self.anim_start) / self.anim_start,
-                )
-
-                self.attributes("-alpha", self.animation_alpha)
-
+            self.animation_alpha = max(
+                0.0,
+                self.animation_alpha
+                - alpha_reduction_factor
+                + (time.time_ns() - self.anim_start) / self.anim_start,
+            )
+            self.attributes("-alpha", self.animation_alpha)
             self.master.after(10, self.animate)
         else:
             self.anim_Lock.release()
