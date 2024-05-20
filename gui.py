@@ -655,7 +655,8 @@ class FakeBlackscreen(tk.Toplevel):
         frame.place(relwidth=1.0, relheight=1.0, relx=0.5, rely=0.5, anchor="center")
 
         self.lift(aboveThis=master)
-        self.attributes("-topmost", True)
+        self.attributes("-topmost", 1)
+        self.attributes("-topmost", 0)
 
         if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
             self.input_prev_state = GPIO.input(pinNr)
@@ -679,13 +680,14 @@ class FakeBlackscreen(tk.Toplevel):
                 self.Timer = self.milliseconds        
             self.input_prev_state = input_value
 
-        
         if self.Timer != 0:
-            self.Timer -= 10 # Aufruf Raster beachten
+            self.Timer -= 100 # Aufruf Raster beachten
             self.Timer = max(0, self.Timer)
 
             if self.Timer <= 0:
                 self.deiconify() # Show again
+                self.attributes("-topmost", 1)
+                self.attributes("-topmost", 0)
         
         self.master.after(100, self.timer_countdown)
 
