@@ -103,14 +103,15 @@ class GUI(tk.Tk, GuiEventProducer):
             self.Setup_secret_shutdown_code, *rest = self.Setup_secret_shutdown_code
 
         localpath = einstellungen_file.parent
+        imagepath = localpath / Path("bilder")
         self.Setup_BG_Bilder = [
-            PhotoImage(file=localpath / Path("img_1.png")),
-            PhotoImage(file=localpath / Path("img_2.png")),
-            PhotoImage(file=localpath / Path("img_3.png")),
+            PhotoImage(file=imagepath / Path("img_1.png")),
+            PhotoImage(file=imagepath / Path("img_2.png")),
+            PhotoImage(file=imagepath / Path("img_3.png")),
         ]
 
-        self.Setup_GlockenBild = PhotoImage(file=localpath / Path("glocke_mittel.png"))
-        self.Setup_BriefBild = PhotoImage(file=localpath / Path("brief_mittel.png"))
+        self.Setup_GlockenBild = PhotoImage(file=imagepath / Path("glocke_mittel.png"))
+        self.Setup_BriefBild = PhotoImage(file=imagepath / Path("brief_mittel.png"))
 
         self.build()
 
