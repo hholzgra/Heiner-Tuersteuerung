@@ -11,10 +11,7 @@ from enum import Enum
 from pathlib import Path
 import sys
 
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    import tomli as tomllib
+from Settings import Settings
 
 # from PIL import ImageTk, Image
 from tkinter import PhotoImage
@@ -85,22 +82,14 @@ class GUI(tk.Tk, GuiEventProducer):
 
         self.keypad = None
 
-        with open(einstellungen_file, "rb") as settings_file:
-            secrets = tomllib.load(settings_file)
-            self.Setup_TOKEN: str = secrets["telegram"]["TOKEN"]
-            self.Setup_CHAT_ID: str = secrets["telegram"]["CHAT_ID"]
-            self.Setup_list_namen: list = [
-                secrets["namen"]["oben"],
-                secrets["namen"]["mitte"],
-                secrets["namen"]["unten"],
-            ]
-            self.Setup_secret_tuer_code: list = (secrets["tuer"]["zugangs_code"],)
-            self.Setup_secret_shutdown_code: list = (secrets["tuer"]["herunterfahren"],)
+        settings = Settings()
 
-            # quick workaround, aus der liste ist beim import ein tuple einer liste geworden
-            # nur das erste element ist die liste
-            self.Setup_secret_tuer_code, *rest = self.Setup_secret_tuer_code
-            self.Setup_secret_shutdown_code, *rest = self.Setup_secret_shutdown_code
+        namen = settings.get("namen")
+        self.Setup_list_namen: list = [
+            namen["oben"],
+            namen["mitte"],
+            namen["unten"],
+        ]
 
         localpath = einstellungen_file.parent
         imagepath = localpath / Path("bilder")
@@ -316,7 +305,8 @@ class KeyPad(tk.Toplevel):
         self.secret_shutdown_code = secret_shutdown_code
 
         self.secret_timeout = ddos_timeout
-        self.secret_max_input_length = ddos_max_input_length
+        self.secre
+        t_max_input_length = ddos_max_input_length
 
         self.sliding_window_tuer_code = []
         self.sliding_window_shutdown = []

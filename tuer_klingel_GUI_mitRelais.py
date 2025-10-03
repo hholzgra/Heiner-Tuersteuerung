@@ -34,12 +34,7 @@ if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi"
 
     sys.excepthook = exceptionLogging
 
-
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    import tomli as tomllib
-
+from Settings import Settings
 
 class EventConsumer(GuiEventConsumer):
 
@@ -53,18 +48,18 @@ class EventConsumer(GuiEventConsumer):
         self.relais_str = relais_str
         self.beeper_strg = beeper_strg
 
-        with open(einstellungen_file, "rb") as settings_file:
+        settings = Settings()
 
-            secrets = tomllib.load(settings_file)
-            self.Setup_TOKEN: str = secrets["telegram"]["TOKEN"]
-            self.Setup_CHAT_ID: str = secrets["telegram"]["CHAT_ID"]
-            self.Setup_list_namen: list = [
-                secrets["namen"]["oben"],
-                secrets["namen"]["mitte"],
-                secrets["namen"]["unten"],
-            ]
-            self.Setup_secret_tuer_code: list = (secrets["tuer"]["zugangs_code"],)
-            self.Setup_secret_shutdown_code: list = (secrets["tuer"]["herunterfahren"],)
+        telegram = settings.get("telegram")
+        self.Setup_TOKEN: str = telegram["TOKEN"]
+        self.Setup_CHAT_ID: str = telegram["CHAT_ID"]
+
+        namen = settings.get("namen")
+        self.Setup_list_namen: list = [
+            namen["oben"],
+            namen["mitte"],
+            namen["unten"],
+        ]
 
     def notify(self, event: GUI_EVENTS):
         """Wird vom GUI aufgerufen wenn ein Click/Oeffner Event statt fand"""

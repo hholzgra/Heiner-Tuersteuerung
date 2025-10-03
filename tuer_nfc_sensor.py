@@ -6,9 +6,10 @@ import smbus
 import time
 import logging
 import os
-import tomli
 from systemd.journal import JournalHandler
 import requests
+
+from Settings import Settings
 
 # systemd logger
 log = logging.getLogger("NFC-Sensor")
@@ -16,15 +17,11 @@ log.addHandler(JournalHandler())
 log.setLevel(logging.INFO)
 # log.info("Hello World")
 
-localpath = os.path.dirname(__file__)
-passcode_file = "einstellungen.txt"
-passcode_file = os.path.join(localpath, passcode_file)
-with open(passcode_file) as file:
-    content = file.read()
-    secrets = tomli.loads(content)
+settings = Settings()
+telegram = Settings.get("telegram")
 
-TOKEN = secrets["telegram"]["TOKEN"]
-CHAT_ID = secrets["telegram"]["CHAT_ID"]
+TOKEN = telegram["TOKEN"]
+CHAT_ID = telegram["CHAT_ID"]
 
 # Relay Karte
 bus = smbus.SMBus(1)  # 0 = /dev/i2c-0 (port I2C0), 1 = /dev/i2c-1 (port I2C1)
