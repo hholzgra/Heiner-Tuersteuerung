@@ -13,9 +13,12 @@ from Settings import Settings
 
 # systemd logger
 log = logging.getLogger("NFC-Sensor")
-log.addHandler(JournalHandler())
 log.setLevel(logging.INFO)
-# log.info("Hello World")
+
+# Logging ins SystemD Journal wenn wir als service laufen
+if 'INVOCATION_ID' in os.environ:
+    from systemd.journal import JournalHandler
+    log.addHandler(JournalHandler())
 
 settings = Settings()
 telegram = Settings.get("telegram")

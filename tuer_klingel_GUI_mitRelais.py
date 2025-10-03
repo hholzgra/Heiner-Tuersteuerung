@@ -18,21 +18,20 @@ import platform
 import logging
 import traceback
 
-if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
+log = logging.getLogger("Tuersteuerung")
+log.setLevel(logging.INFO)
+
+# Logging ins SystemD Journal wenn wir als service laufen
+if 'INVOCATION_ID' in os.environ:
     from systemd.journal import JournalHandler
-
-    # systemd logger
-    log = logging.getLogger("NFC-Sensor")
     log.addHandler(JournalHandler())
-    log.setLevel(logging.INFO)
-    # log.info("Hello World")
 
-    def exceptionLogging(*exc_info):
-        text = "".join(traceback.format_exception(*exc_info()))
-        log.error("#### Tuersystem GUI Exception ####")
-        log.error("Unhandled exception: %s", text)
+def exceptionLogging(*exc_info):
+    text = "".join(traceback.format_exception(*exc_info()))
+    log.error("#### Tuersystem GUI Exception ####")
+    log.error("Unhandled exception: %s", text)
 
-    sys.excepthook = exceptionLogging
+sys.excepthook = exceptionLogging
 
 from Settings import Settings
 
