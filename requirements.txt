@@ -1,0 +1,4 @@
+Requests
+smbus
+systemd
+tomli
