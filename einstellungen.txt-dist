@@ -1,12 +1,16 @@
+# Türsteuerungs-Zugangscodes
 [tuer]
-zugangs_code = []
-herunterfahren = []
+zugangs_code   = [  1,  2,  3,  4 ]
+herunterfahren = [ 13, 12, 11, 10 ]
 
+# Telegram Benachrichtungs-Einstellungen
 [telegram]
-TOKEN = ""
+TOKEN   = ""
 CHAT_ID = ""
 
+# Namen für die einzelnen Klingelschilder
 [namen] 
-oben = ""
-mitte = ""
-unten = ""
+oben  = "Konrad Stupenburg"
+mitte = "Paul Niemöser"
+unten = "Briefkasten öffnen"
+
