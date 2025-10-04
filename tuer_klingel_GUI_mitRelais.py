@@ -26,6 +26,11 @@ if 'INVOCATION_ID' in os.environ:
     from systemd.journal import JournalHandler
     log.addHandler(JournalHandler())
     
+def exceptionLogging(*exc_info):
+    text = "".join(traceback.format_exception(*exc_info()))
+    log.error("#### Tuersystem GUI Exception ####")
+    log.error("Unhandled exception: %s", text)
+
 sys.excepthook = exceptionLogging
     
 class EventConsumer(GuiEventConsumer):
@@ -118,10 +123,6 @@ def endProcess(signalnum=None, handler=None):
     relais_strg.ALLOFF()
     sys.exit()
 
-def exceptionLogging(*exc_info):
-    text = "".join(traceback.format_exception(*exc_info()))
-    log.error("#### Tuersystem GUI Exception ####")
-    log.error("Unhandled exception: %s", text)
 
 
 ################################################################################
