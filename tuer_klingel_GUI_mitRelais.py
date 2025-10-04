@@ -133,7 +133,7 @@ def endProcess(signalnum=None, handler=None):
 
 if __name__ == '__main__':
     # Kommandozeilen-Parser initialisieren
-    parser = argparse.ArgumentParser(description="")
+    parser = argparse.ArgumentParser(description="Tuersteuerung")
     
     # Kommandozeilen-Optionen hinzufügen
     parser.add_argument(
@@ -144,7 +144,7 @@ if __name__ == '__main__':
 
     # Kommandozeile auswerten
     global args
-    args, unknown = parser.parse_known_args()
+    args, unknown = parser.parse_args()
 
 
     signal.signal(signal.SIGINT,  endProcess)
