@@ -67,7 +67,7 @@ class EventConsumer(GuiEventConsumer):
             self.relais_str.TriggerRelais(
                 RelaisSteuerung.RELAIS_2, Ansteuerzeit_Sek=1
             )  # Klingel oben
-            self.telegram_bot_notification(
+            self.telegram.bot_notification(
                 "Klingel `" + self.Setup_list_namen[0] + "`."
             )
             self.beeper_strg.TriggerBeeper(Ansteuerzeit_Sek=0.5)
@@ -100,6 +100,7 @@ class EventConsumer(GuiEventConsumer):
 
         if args.demomodus:
             print(f"Consumer got Message: {event}")
+
 
     def telegram_bot_notification(self, message: str):
         """Sendet eine Nachricht an den mit TOKEN und CHAT_ID konfigurierten Telegram Bot"""

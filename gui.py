@@ -91,6 +91,10 @@ class GUI(tk.Tk, GuiEventProducer):
             namen["unten"],
         ]
 
+        secrets = settings.get("tuer")
+        self.Setup_secret_tuer_code: list     = secrets["zugangs_code"]
+        self.Setup_secret_shutdown_code: list = secrets["herunterfahren"]
+
         localpath = einstellungen_file.parent
         imagepath = localpath / Path("bilder")
         self.Setup_BG_Bilder = [
@@ -305,8 +309,7 @@ class KeyPad(tk.Toplevel):
         self.secret_shutdown_code = secret_shutdown_code
 
         self.secret_timeout = ddos_timeout
-        self.secre
-        t_max_input_length = ddos_max_input_length
+        self.secret_max_input_length = ddos_max_input_length
 
         self.sliding_window_tuer_code = []
         self.sliding_window_shutdown = []
