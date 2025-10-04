@@ -32,12 +32,12 @@ class EventConsumer(GuiEventConsumer):
 
     def __init__(
         self,
-        relais_str: RelaisSteuerung,
+        relais_strg: RelaisSteuerung,
         beeper_strg: BeeperSteuerung,
         einstellungen_file: Path = Path("einstellungen.txt"),
     ) -> None:
         super().__init__()
-        self.relais_str = relais_str
+        self.relais_strg = relais_strg
         self.beeper_strg = beeper_strg
 
         settings = Settings()
@@ -57,7 +57,7 @@ class EventConsumer(GuiEventConsumer):
         """Wird vom GUI aufgerufen wenn ein Click/Oeffner Event statt fand"""
         print("----")
         if event == GUI_EVENTS.KLINGEL_1:
-            self.relais_str.TriggerRelais(
+            self.relais_strg.TriggerRelais(
                 RelaisSteuerung.RELAIS_2, Ansteuerzeit_Sek=1
             )  # Klingel oben
             self.telegram.bot_notification(
@@ -66,7 +66,7 @@ class EventConsumer(GuiEventConsumer):
             self.beeper_strg.TriggerBeeper(Ansteuerzeit_Sek=0.5)
 
         elif event == GUI_EVENTS.KLINGEL_2:
-            self.relais_str.TriggerRelais(
+            self.relais_strg.TriggerRelais(
                 RelaisSteuerung.RELAIS_3, Ansteuerzeit_Sek=1
             )  # Klingel mitte
             self.telegram_bot_notification(
@@ -75,14 +75,14 @@ class EventConsumer(GuiEventConsumer):
             self.beeper_strg.TriggerBeeper(Ansteuerzeit_Sek=0.5)
 
         elif event == GUI_EVENTS.BRIEFKASTEN:
-            self.relais_str.TriggerRelais(
+            self.relais_strg.TriggerRelais(
                 RelaisSteuerung.RELAIS_4, Ansteuerzeit_Sek=1
             )  # Briefkasten unten
             self.telegram_bot_notification("Briefkasten wurde geöffnet.")
             self.beeper_strg.TriggerBeeper(Ansteuerzeit_Sek=0.5)
 
         elif event == GUI_EVENTS.TUER_OEFFNER:
-            self.relais_str.TriggerRelais(
+            self.relais_strg.TriggerRelais(
                 RelaisSteuerung.RELAIS_1, Ansteuerzeit_Sek=2
             )  # Tueroeffner Relais
             self.telegram_bot_notification("Tür wurde mit Code geöffnet.")
@@ -115,7 +115,7 @@ class EventConsumer(GuiEventConsumer):
 # Called on process interruption. Set all pins to "Input" default mode.
 def endProcess(signalnum=None, handler=None):
     stop_event.set()
-    relais_str.ALLOFF()
+    relais_strg.ALLOFF()
     sys.exit()
 
 def exceptionLogging(*exc_info):
@@ -151,8 +151,8 @@ if __name__ == '__main__':
 
     stop_event = threading.Event()
     
-    relais_str = RelaisSteuerung(stop_event=stop_event, demo_modus=args.demomodus)
-    relais_str.start()
+    relais_strg = RelaisSteuerung(stop_event=stop_event, demo_modus=args.demomodus)
+    relais_strg.start()
 
     beeper_strg = BeeperSteuerung(stop_event=stop_event, demo_modus=args.demomodus)
     beeper_strg.start()
@@ -161,7 +161,7 @@ if __name__ == '__main__':
     file_path = Path(Path(localpath) / "einstellungen.txt")
 
     eventConsumer = EventConsumer(
-        relais_str=relais_str, beeper_strg=beeper_strg, einstellungen_file=file_path
+        relais_strg=relais_strg, beeper_strg=beeper_strg, einstellungen_file=file_path
     )
 
     gui = GUI(
