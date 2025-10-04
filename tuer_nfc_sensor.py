@@ -10,6 +10,7 @@ from systemd.journal import JournalHandler
 import requests
 
 from Settings import Settings
+import Telegram
 
 # systemd logger
 log = logging.getLogger("NFC-Sensor")
@@ -21,10 +22,6 @@ if 'INVOCATION_ID' in os.environ:
     log.addHandler(JournalHandler())
 
 settings = Settings()
-telegram = Settings.get("telegram")
-
-TOKEN = telegram["TOKEN"]
-CHAT_ID = telegram["CHAT_ID"]
 
 # Relay Karte
 bus = smbus.SMBus(1)  # 0 = /dev/i2c-0 (port I2C0), 1 = /dev/i2c-1 (port I2C1)
@@ -137,12 +134,7 @@ if __name__ == "__main__":
             time.sleep(2)
             relay.OFF_1()
 
-            message = "Tür wurde mit Karte geöffnet."
-            url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={message}"
-            try:
-                requests.get(url)
-            except:
-                pass
+            Telegram.bot_notification("Tür wurde mit Karte geöffnet.")
 
         else:
             # print("NFC-Reader: Falsche Karte erkannt!")

@@ -15,6 +15,7 @@ import traceback
 from Settings import Settings
 from RelaisSteuerung import RelaisSteuerung
 from BeeperSteuerung import BeeperSteuerung
+import Telegram
 
 # Logging initialisieren
 log = logging.getLogger("Tuersteuerung")
@@ -45,10 +46,6 @@ class EventConsumer(GuiEventConsumer):
 
         settings = Settings()
 
-        telegram = settings.get("telegram")
-        self.Setup_TOKEN: str = telegram["TOKEN"]
-        self.Setup_CHAT_ID: str = telegram["CHAT_ID"]
-
         namen = settings.get("namen")
         self.Setup_list_namen: list = [
             namen["oben"],
@@ -63,8 +60,9 @@ class EventConsumer(GuiEventConsumer):
             self.relais_strg.TriggerRelais(
                 RelaisSteuerung.RELAIS_2, Ansteuerzeit_Sek=1
             )  # Klingel oben
-            self.telegram.bot_notification(
-                "Klingel `" + self.Setup_list_namen[0] + "`."
+            Telegram.bot_notification(
+                "Klingel `" + self.Setup_list_namen[0] + "`.",
+                args.demomodus
             )
             self.beeper_strg.TriggerBeeper(Ansteuerzeit_Sek=0.5)
 
@@ -72,8 +70,9 @@ class EventConsumer(GuiEventConsumer):
             self.relais_strg.TriggerRelais(
                 RelaisSteuerung.RELAIS_3, Ansteuerzeit_Sek=1
             )  # Klingel mitte
-            self.telegram_bot_notification(
-                "Klingel `" + self.Setup_list_namen[1] + "`."
+            Telegram.bot_notification(
+                "Klingel `" + self.Setup_list_namen[1] + "`.",
+                args.demomodus
             )
             self.beeper_strg.TriggerBeeper(Ansteuerzeit_Sek=0.5)
 
@@ -81,14 +80,20 @@ class EventConsumer(GuiEventConsumer):
             self.relais_strg.TriggerRelais(
                 RelaisSteuerung.RELAIS_4, Ansteuerzeit_Sek=1
             )  # Briefkasten unten
-            self.telegram_bot_notification("Briefkasten wurde geöffnet.")
+            Telegram.bot_notification(
+                "Briefkasten wurde geöffnet.",
+                args.demomodus
+            )
             self.beeper_strg.TriggerBeeper(Ansteuerzeit_Sek=0.5)
 
         elif event == GUI_EVENTS.TUER_OEFFNER:
             self.relais_strg.TriggerRelais(
                 RelaisSteuerung.RELAIS_1, Ansteuerzeit_Sek=2
             )  # Tueroeffner Relais
-            self.telegram_bot_notification("Tür wurde mit Code geöffnet.")
+            Telegram.bot_notification(
+                "Tür wurde mit Code geöffnet.",
+                args.demomodus
+            )
 
         elif event == GUI_EVENTS.SHUTDOWN_EVT:
             # hier koennte ihr shutdown-befehl stehen
@@ -96,23 +101,6 @@ class EventConsumer(GuiEventConsumer):
 
         if args.demomodus:
             print(f"Consumer got Message: {event}")
-
-
-    def telegram_bot_notification(self, message: str):
-        """Sendet eine Nachricht an den mit TOKEN und CHAT_ID konfigurierten Telegram Bot"""
-
-        url = f"https://api.telegram.org/bot{self.Setup_TOKEN}/sendMessage?chat_id={self.Setup_CHAT_ID}&text={message}"
-
-        if args.demomodus:
-            print(f"DEMO::TelegramMsg:  {url}")
-            return
-
-        try:
-            requests.get(url)
-            print("GESENDET")
-        except:
-            print("SENDE FEHLER")
-            pass
 
 
 # Called on process interruption. Set all pins to "Input" default mode.
