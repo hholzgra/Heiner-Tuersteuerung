@@ -22,7 +22,7 @@ log = logging.getLogger("Tuersteuerung")
 log.setLevel(logging.INFO)
 
 # Logging ins SystemD Journal wenn wir als Service laufen
-if 'INVOCATION_ID' in os.environ:
+if os.getppid() == 1:
     from systemd.journal import JournalHandler
     log.addHandler(JournalHandler())
     
