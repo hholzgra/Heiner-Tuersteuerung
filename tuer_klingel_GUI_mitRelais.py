@@ -8,14 +8,14 @@ from threading import Timer, Thread
 import requests
 import argparse
 from gui import GUI, GuiEventConsumer, GuiEventProducer, GUI_EVENTS
-from RelaisSteuerung import RelaisSteuerung
-from BeeperSteuerung import BeeperSteuerung
 import threading
 
 import logging
 import traceback
 
 from Settings import Settings
+from RelaisSteuerung import RelaisSteuerung
+from BeeperSteuerung import BeeperSteuerung
 
 # Logging initialisieren
 log = logging.getLogger("Tuersteuerung")
