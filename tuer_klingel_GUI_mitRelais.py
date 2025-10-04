@@ -27,7 +27,7 @@ if os.getppid() == 1:
     log.addHandler(JournalHandler())
     
 def exceptionLogging(*exc_info):
-    text = "".join(traceback.format_exception(*exc_info()))
+    text = "".join(traceback.format_exception(*exc_info))
     log.error("#### Tuersystem GUI Exception ####")
     log.error("Unhandled exception: %s", text)
 
