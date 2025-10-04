@@ -1,9 +1,7 @@
 from pathlib import Path
 import tkinter as tk
-import binascii
 import signal
 import sys
-import time
 import os
 from dataclasses import dataclass
 from threading import Timer, Thread
@@ -13,7 +11,6 @@ from gui import GUI, GuiEventConsumer, GuiEventProducer, GUI_EVENTS
 from RelaisSteuerung import RelaisSteuerung
 from BeeperSteuerung import BeeperSteuerung
 import threading
-import platform
 
 import logging
 import traceback
