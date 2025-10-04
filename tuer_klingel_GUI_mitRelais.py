@@ -144,7 +144,7 @@ if __name__ == '__main__':
 
     # Kommandozeile auswerten
     global args
-    args, unknown = parser.parse_args()
+    args = parser.parse_args()
 
 
     signal.signal(signal.SIGINT,  endProcess)
