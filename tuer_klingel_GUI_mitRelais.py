@@ -18,23 +18,19 @@ import platform
 import logging
 import traceback
 
+from Settings import Settings
+
+# Logging initialisieren
 log = logging.getLogger("Tuersteuerung")
 log.setLevel(logging.INFO)
 
-# Logging ins SystemD Journal wenn wir als service laufen
+# Logging ins SystemD Journal wenn wir als Service laufen
 if 'INVOCATION_ID' in os.environ:
     from systemd.journal import JournalHandler
     log.addHandler(JournalHandler())
-
-def exceptionLogging(*exc_info):
-    text = "".join(traceback.format_exception(*exc_info()))
-    log.error("#### Tuersystem GUI Exception ####")
-    log.error("Unhandled exception: %s", text)
-
+    
 sys.excepthook = exceptionLogging
-
-from Settings import Settings
-
+    
 class EventConsumer(GuiEventConsumer):
 
     def __init__(
@@ -125,6 +121,11 @@ def endProcess(signalnum=None, handler=None):
     relais_str.ALLOFF()
     sys.exit()
 
+def exceptionLogging(*exc_info):
+    text = "".join(traceback.format_exception(*exc_info()))
+    log.error("#### Tuersystem GUI Exception ####")
+    log.error("Unhandled exception: %s", text)
+
 
 ################################################################################
 ################################################################################
@@ -132,47 +133,48 @@ def endProcess(signalnum=None, handler=None):
 ################################################################################
 ################################################################################
 
+if __name__ == '__main__':
+    # Kommandozeilen-Parser initialisieren
+    parser = argparse.ArgumentParser(description="")
+    
+    # Kommandozeilen-Optionen hinzufügen
+    parser.add_argument(
+        "--demomodus",
+        action="store_true",
+        help="Deaktiviert Dinge die auf einem nicht-PI nicht funktionieren und erzeugt zusaetzliche Consolen Ausgaben",
+    )
 
-# Instantiate the parser
-parser = argparse.ArgumentParser(description="")
-
-# Switch
-parser.add_argument(
-    "--demomodus",
-    action="store_true",
-    help="Deaktiviert Dinge die auf einem nicht-PI nicht funktionieren und erzeugt zusaetzliche Consolen Ausgaben",
-)
-
-global args
-args, unknown = parser.parse_known_args()
-
-
-signal.signal(signal.SIGINT, endProcess)
-
-signal.SIGTERM
-stop_event = threading.Event()
-relais_str = RelaisSteuerung(stop_event=stop_event, demo_modus=args.demomodus)
-relais_str.start()
-
-beeper_strg = BeeperSteuerung(stop_event=stop_event, demo_modus=args.demomodus)
-beeper_strg.start()
-
-localpath = os.path.dirname(__file__)
-file_path = Path(Path(localpath) / "einstellungen.txt")
+    # Kommandozeile auswerten
+    global args
+    args, unknown = parser.parse_known_args()
 
 
-eventConsumer = EventConsumer(
-    relais_str=relais_str, beeper_strg=beeper_strg, einstellungen_file=file_path
-)
+    signal.signal(signal.SIGINT,  endProcess)
+    signal.signal(signal.SIGTERM, endProcess)
+
+    stop_event = threading.Event()
+    
+    relais_str = RelaisSteuerung(stop_event=stop_event, demo_modus=args.demomodus)
+    relais_str.start()
+
+    beeper_strg = BeeperSteuerung(stop_event=stop_event, demo_modus=args.demomodus)
+    beeper_strg.start()
+
+    localpath = os.path.dirname(__file__)
+    file_path = Path(Path(localpath) / "einstellungen.txt")
+
+    eventConsumer = EventConsumer(
+        relais_str=relais_str, beeper_strg=beeper_strg, einstellungen_file=file_path
+    )
+
+    gui = GUI(
+        einstellungen_file=file_path, beeper_strg=beeper_strg, demo_modus=args.demomodus
+    )
+    
+    gui.register(eventConsumer)
+    gui.bind("<Escape>", lambda event: gui.quit())
+    gui.protocol("WM_DELETE_WINDOW", endProcess)
+    gui.mainloop()
 
 
-gui = GUI(
-    einstellungen_file=file_path, beeper_strg=beeper_strg, demo_modus=args.demomodus
-)
-gui.register(eventConsumer)
-gui.bind("<Escape>", lambda event: gui.quit())
-gui.protocol("WM_DELETE_WINDOW", endProcess)
-gui.mainloop()
-
-
-stop_event.set()
+    stop_event.set()
