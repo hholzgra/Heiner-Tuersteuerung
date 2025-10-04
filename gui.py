@@ -1,3 +1,4 @@
+import os
 import math
 import platform
 import pprint
@@ -55,7 +56,6 @@ class GUI(tk.Tk, GuiEventProducer):
     def __init__(
         self,
         beeper_strg: BeeperSteuerung,
-        einstellungen_file: Path = Path("einstellungen.txt"),
         demo_modus=False,
         *args,
         **kwargs,
@@ -95,7 +95,7 @@ class GUI(tk.Tk, GuiEventProducer):
         self.Setup_secret_tuer_code: list     = secrets["zugangs_code"]
         self.Setup_secret_shutdown_code: list = secrets["herunterfahren"]
 
-        localpath = einstellungen_file.parent
+        localpath = Path(os.path.dirname(__file__))
         imagepath = localpath / Path("bilder")
         self.Setup_BG_Bilder = [
             PhotoImage(file=imagepath / Path("img_1.png")),

@@ -1,4 +1,3 @@
-from pathlib import Path
 import tkinter as tk
 import signal
 import sys
@@ -39,7 +38,6 @@ class EventConsumer(GuiEventConsumer):
         self,
         relais_strg: RelaisSteuerung,
         beeper_strg: BeeperSteuerung,
-        einstellungen_file: Path = Path("einstellungen.txt"),
     ) -> None:
         super().__init__()
         self.relais_strg = relais_strg
@@ -159,14 +157,13 @@ if __name__ == '__main__':
     beeper_strg.start()
 
     localpath = os.path.dirname(__file__)
-    file_path = Path(Path(localpath) / "einstellungen.txt")
 
     eventConsumer = EventConsumer(
-        relais_strg=relais_strg, beeper_strg=beeper_strg, einstellungen_file=file_path
+        relais_strg=relais_strg, beeper_strg=beeper_strg
     )
 
     gui = GUI(
-        einstellungen_file=file_path, beeper_strg=beeper_strg, demo_modus=args.demomodus
+        beeper_strg=beeper_strg, demo_modus=args.demomodus
     )
     
     gui.register(eventConsumer)
