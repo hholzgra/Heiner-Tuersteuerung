@@ -14,9 +14,10 @@ oben  = "Konrad Stupenburg"
 mitte = "Paul Niemöser"
 unten = "Briefkasten öffnen"
 
+# NFC-Tokens zur Türöffnung
 [nfc]
 tokens = [
-	   "deadbeef",
-           "12345678",
+	   "deadbeef", # Konrad
+           "12345678", # Paul
 	 ]
 
