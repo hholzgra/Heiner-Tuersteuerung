@@ -17,29 +17,22 @@ echo '@xset s noblank' >> "$AUTOSTART_FILE"
 echo '@xset s noexpose' >> "$AUTOSTART_FILE"
 echo '@xset dpms 0 0 20' >> "$AUTOSTART_FILE"
 echo '@python /home/raspberry/system_services_tuer/tuer_klingel_GUI_mitRelais.py' >> "$AUTOSTART_FILE"
-echo '##@chromium-browser --chrome-frame --kiosk https://about:blank' >> "$AUTOSTART_FILE"
 
 # Installation zusätzlicher Pakete eventuell nötig
 pip install nfcpy tomli
-sudo apt install python3-systemd
-sudo apt install python3-pil.imagetk
+sudo apt-get install -y python3-requests ython3-systemd python3-pil.imagetk
 
 # System Services
 SYSTEMD_FOLDER="/etc/systemd/system"
 sudo cp "$SCRIPT_DIR"/tuer_gpio_backlight_control.service "$SYSTEMD_FOLDER"
 sudo cp "$SCRIPT_DIR"/tuer_nfc_sensor.service "$SYSTEMD_FOLDER"
 
-#SYSTEMD_FOLDER_ALT="/etc/systemd/system/multi-user.target.wants"
-#sudo cp "$SCRIPT_DIR"/gpio_backlight_control.service "$SYSTEMD_FOLDER_ALT"
-#sudo cp "$SCRIPT_DIR"/tuer_nfc_sensor.service "$SYSTEMD_FOLDER_ALT"
-
+# Änderungen übernehmen / aktivieren
 sudo systemctl daemon-reload
 
-sudo systemctl enable tuer_gpio_backlight_control.service
-sudo systemctl start tuer_gpio_backlight_control.service
-
-sudo systemctl enable tuer_nfc_sensor.service
-sudo systemctl start tuer_nfc_sensor.service
+# Dienste starten
+sudo systemctl enable --now tuer_gpio_backlight_control.service
+sudo systemctl enable --now tuer_nfc_sensor.service
 
 
 chmod +x "$SCRIPT_DIR"/../tuer_gpio_backlight_control.py
