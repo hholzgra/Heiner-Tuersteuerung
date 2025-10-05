@@ -11,13 +11,16 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from pathlib import Path
 import sys
-
+import logging
 from Settings import Settings
 
 # from PIL import ImageTk, Image
 from tkinter import PhotoImage
 from BeeperSteuerung import BeeperSteuerung
 import threading
+
+# Logging initialisieren
+log = logging.getLogger("Tuersteuerung")
 
 if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
     import RPi.GPIO as GPIO
@@ -355,16 +358,16 @@ class KeyPad(tk.Toplevel):
 
         # Tuerrelais Passwort abgleich
         self.sliding_window_tuer_code.append(int(value))
-        # print(f"sliding_window_tuer_code: {self.sliding_window_tuer_code}")
-        # print(f"len(self.secret_tuer_code): {len(self.secret_tuer_code)}")
-        # print(f"self.secret_tuer_code: {self.secret_tuer_code}")
+        log.debug(f"sliding_window_tuer_code: {self.sliding_window_tuer_code}")
+        log.debug(f"len(self.secret_tuer_code): {len(self.secret_tuer_code)}")
+        log.debug(f"self.secret_tuer_code: {self.secret_tuer_code}")
         if len(self.sliding_window_tuer_code) > len(self.secret_tuer_code):
             self.sliding_window_tuer_code.reverse()
             self.sliding_window_tuer_code.pop()
             self.sliding_window_tuer_code.reverse()
 
-        # print("Es wurde " + str(value) + " geklickt")
-        # print(self.sliding_window_tuer_code)
+        log.debug("Es wurde " + str(value) + " geklickt")
+        log.debug(self.sliding_window_tuer_code)
 
         if self.sliding_window_tuer_code == self.secret_tuer_code:
             BlockingWindows(self.master, seconds=3, title="Tuer ist offen")
@@ -383,8 +386,8 @@ class KeyPad(tk.Toplevel):
                 self.sliding_window_shutdown.pop()
                 self.sliding_window_shutdown.reverse()
 
-            # print("Es wurde " + str(value) + " geklickt")
-            # print(self.sliding_window_shutdown)
+            log.debug("Es wurde " + str(value) + " geklickt")
+            log.debug(self.sliding_window_shutdown)
 
             if self.sliding_window_shutdown == self.secret_shutdown_code:
                 BlockingWindows(

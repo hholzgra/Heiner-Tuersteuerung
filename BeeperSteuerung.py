@@ -1,10 +1,13 @@
 import threading
 import time
 import platform
+import logging
+
+# Logging initialisieren
+log = logging.getLogger("Tuersteuerung")
 
 if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
     import RPi.GPIO as GPIO
-
 
 class BeeperSteuerung(threading.Thread):
 
@@ -39,18 +42,14 @@ class BeeperSteuerung(threading.Thread):
         """Schaltet ein Relais ein und zieht den Abschalttimer wieder auf"""
         self.Timer = Ansteuerzeit_Sek * 100  # Skalierung auf 10ms Raster
         self._BeeperON()
-        if self.demo_modus:
-            print(f"Starte Beeper mit {Ansteuerzeit_Sek} Sek")
+        log.debug(f"Starte Beeper mit {Ansteuerzeit_Sek} Sek")
 
     def _BeeperOFF(self):
-        if self.demo_modus:
-            print(f"Beeper OFF")
-        else:
+        log.debug(f"Beeper OFF")
+        if not self.demo_modus:
             GPIO.output(self.BeeperpinNr, True)
 
     def _BeeperON(self):
-        if self.demo_modus:
-            # print(f"Beeper ON")
-            pass
-        else:
+        log.debug(f"Beeper ON")
+        if not self.demo_modus:
             GPIO.output(self.BeeperpinNr, False)

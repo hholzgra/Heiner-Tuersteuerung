@@ -55,7 +55,7 @@ class EventConsumer(GuiEventConsumer):
 
     def notify(self, event: GUI_EVENTS):
         """Wird vom GUI aufgerufen wenn ein Click/Oeffner Event statt fand"""
-        print("----")
+        log.debug("----")
         if event == GUI_EVENTS.KLINGEL_1:
             self.relais_strg.TriggerRelais(
                 RelaisSteuerung.RELAIS_2, Ansteuerzeit_Sek=1
@@ -99,8 +99,7 @@ class EventConsumer(GuiEventConsumer):
             # hier koennte ihr shutdown-befehl stehen
             pass
 
-        if args.demomodus:
-            print(f"Consumer got Message: {event}")
+        log.debug(f"Consumer got Message: {event}")
 
 
 # Called on process interruption. Set all pins to "Input" default mode.
@@ -132,6 +131,8 @@ if __name__ == '__main__':
     global args
     args = parser.parse_args()
 
+    if args.demomodus:
+        log.setLevel(logging.DEBUG)
 
     signal.signal(signal.SIGINT,  endProcess)
     signal.signal(signal.SIGTERM, endProcess)

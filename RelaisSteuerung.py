@@ -1,6 +1,9 @@
 import threading
 import time
+import logging
 
+# Logging initialisieren
+log = logging.getLogger("Tuersteuerung")
 
 class RelaisSteuerung(threading.Thread):
 
@@ -54,8 +57,7 @@ class RelaisSteuerung(threading.Thread):
                     if self.Timer[i] == 0:
                         # Timer hat Null erreicht, Relais abschalten
                         self.func_list_OFF[i]()
-                        if self.demo_modus:
-                            print(bin(self.DEVICE_REG_DATA))
+                        log.debug(bin(self.DEVICE_REG_DATA))
 
     def TriggerRelais(
         self, relais_nummer: int, Ansteuerzeit_Sek: int = DEFAULT_ANSTEUERZEIT_SEK
@@ -63,9 +65,8 @@ class RelaisSteuerung(threading.Thread):
         """Schaltet ein Relais ein und zieht den Abschalttimer wieder auf"""
         self.Timer[relais_nummer] = Ansteuerzeit_Sek * 10  # Skalierung auf 100ms Raster
         self.func_list_ON[relais_nummer]()
-        if self.demo_modus:
-            print(f"Starte Nr {relais_nummer} mit {Ansteuerzeit_Sek} Sek")
-            print(bin(self.DEVICE_REG_DATA))
+        log.debug(f"Starte Nr {relais_nummer} mit {Ansteuerzeit_Sek} Sek")
+        log.debug(bin(self.DEVICE_REG_DATA))
 
     def fake_ON(self):
         pass
