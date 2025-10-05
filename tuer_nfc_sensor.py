@@ -21,8 +21,6 @@ if 'INVOCATION_ID' in os.environ:
     from systemd.journal import JournalHandler
     log.addHandler(JournalHandler())
 
-settings = Settings()
-
 # Relay Karte
 bus = smbus.SMBus(1)  # 0 = /dev/i2c-0 (port I2C0), 1 = /dev/i2c-1 (port I2C1)
 
@@ -60,6 +58,8 @@ clf = nfc.ContactlessFrontend()
 
 
 if __name__ == "__main__":
+    settings = Settings()
+    nfc = settings.get("nfc")
 
     relay = Relay()
 
@@ -85,24 +85,7 @@ if __name__ == "__main__":
         log.info("Kartennummer: " + str(seriennummer))
 
         # Prüfe Seriennummer
-        if (
-            seriennummer == "bc75ed67"
-            or seriennummer == "ea0388be"
-            or seriennummer == "c7ecfeef"
-            or seriennummer == "a3703b1c"
-            or seriennummer == "6c961f31"
-            or seriennummer == "760f4000"
-            or seriennummer == "7a846f9c"
-            or seriennummer == "07f406f0"
-            or seriennummer == "772006f0"
-            or seriennummer == "97e106f0"
-            or seriennummer == "379cfaef"
-            or seriennummer == "f74cf7ef"
-            or seriennummer == "077901f0"
-            or seriennummer == "d7c304f0"
-            or seriennummer == "0aa4bfd3"
-            or seriennummer == "6a88bfd3"
-        ):
+        if seriennummer in nfc["tokens"]:
             log.info("Richtige Karte! Tuer geoeffnet.")
             # Hier Tuer oeffnen
             relay.ON_1()

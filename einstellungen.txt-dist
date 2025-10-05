@@ -14,3 +14,9 @@ oben  = "Konrad Stupenburg"
 mitte = "Paul Niemöser"
 unten = "Briefkasten öffnen"
 
+[nfc]
+tokens = [
+	   "deadbeef",
+           "12345678",
+	 ]
+
