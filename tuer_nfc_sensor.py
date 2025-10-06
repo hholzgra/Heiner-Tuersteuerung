@@ -1,3 +1,5 @@
+#! /bin/env python3
+
 import nfc
 import binascii
 import signal
