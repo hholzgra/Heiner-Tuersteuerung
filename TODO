@@ -1,9 +1,8 @@
 # TODO
 
-* GPIO Pin Nummern konfigurierbar machen
-* PIP Packetierung
-* Touchscreen-, NFC- und Radar-Handling als Threads statt als eigne Services?
-* Authors/Contributors Information
-* Im Demo-Modus alle Ausgaben im Fenster positionieren statt zum Teil hart links oben auf dem Bildschirm
-
-
+[ ] GPIO Pin Nummern konfigurierbar machen
+[ ] bessere Verzeichnisstruktur
+[ ] PIP Packetierung
+[ ] Touchscreen-, NFC- und Radar-Handling als Threads statt als eigne Services?
+[ ] Authors/Contributors Information
+[ ] Im Demo-Modus alle Ausgaben im Fenster positionieren statt zum Teil hart links oben auf dem Bildschirm
