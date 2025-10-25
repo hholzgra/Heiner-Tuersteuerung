@@ -10,6 +10,7 @@ import requests
 import argparse
 from gui import GUI, GuiEventConsumer, GuiEventProducer, GUI_EVENTS
 import threading
+import platform
 
 import logging
 import traceback
@@ -27,7 +28,7 @@ log.setLevel(logging.INFO)
 if os.getppid() == 1:
     from systemd.journal import JournalHandler
     log.addHandler(JournalHandler())
-    
+
 def exceptionLogging(*exc_info):
     text = "".join(traceback.format_exception(*exc_info))
     log.error("#### Tuersystem GUI Exception ####")
@@ -126,6 +127,9 @@ if __name__ == '__main__':
     parser.add_argument(
         "--demomodus",
         action="store_true",
+        default = (    platform.uname().system != "Linux"
+                    or platform.uname().node != "raspberrypi"
+                    ),
         help="Deaktiviert Dinge die auf einem nicht-PI nicht funktionieren und erzeugt zusaetzliche Consolen Ausgaben",
     )
 
