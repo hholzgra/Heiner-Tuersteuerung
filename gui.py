@@ -186,11 +186,8 @@ class GUI(tk.Tk, GuiEventProducer):
                 foreground="#111111",
                 background="#111111",
                 text=self.text_spacer + self.Setup_list_namen[i],
-                # highlightbackground="#111111",
-                # highlightcolor="#111111",
                 font=self.my_font,
                 compound="center",
-                # justify="center",
             )
 
             cmd_for_btn = lambda event, idx=i: self.event_button_click(event, idx)
@@ -323,9 +320,6 @@ class KeyPad(tk.Toplevel):
 
         frame = tk.Frame(self, width=800, height=480, background="#424242")
         frame.grid(row=self.rows, column=self.columns)
-
-        # label = tk.Label(frame, text="", background="#424242")
-        # label.grid(column=0, columnspan=self.columns, pady=20, padx=0)
 
         btn_back = tk.Button(
             frame, text="Zurück", command=self.destroy, font=("Helvetica 20 bold")
@@ -594,14 +588,12 @@ class BildPopup(tk.Toplevel):
             speed_dt = 0.2
 
             if self.anim_pos_toggle:
-                # self.x_offset += 1
                 self.x_offset += (target_offset_plus - self.x_offset) * (
                     1 - math.exp(-speed_dt)
                 )
                 if self.x_offset > target_offset_plus - 1:
                     self.anim_pos_toggle = False
             else:
-                # self.x_offset -= 1
                 self.x_offset += (target_offset_minus - self.x_offset) * (
                     1 - math.exp(-speed_dt)
                 )
