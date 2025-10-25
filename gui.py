@@ -418,10 +418,13 @@ class BlockingWindows(tk.Toplevel):
     ) -> None:
         super().__init__(master=master)
         self.master = master
-
-        # Titelzeile entfernen
-        self.overrideredirect(True)
-        self.geometry("800x480")
+        if self.master.demo_modus:
+            self.title(title)
+            self.geometry(self.master.geometry())
+        else:
+            # Titelzeile entfernen
+            self.overrideredirect(True)
+            self.geometry("800x480")
         self.config(cursor="none", background=bg_color)
         self.seconds = seconds
 
@@ -490,11 +493,14 @@ class BildPopup(tk.Toplevel):
     ) -> None:
         super().__init__(master=master)
         self.master = master
-
         self.sidelength = bild.height() + x_anim_offset_px
 
-        # Titelzeile entfernen
-        self.overrideredirect(True)
+        if self.master.demo_modus:
+            self.title("BildPopup")
+        else:
+            # Titelzeile entfernen
+            self.overrideredirect(True)
+
         geometry = f"{self.sidelength}x{self.sidelength}+{int(x_pos-self.sidelength/2)}+{int(y_pos-self.sidelength/2)}"
         self.geometry(geometry)
 
@@ -631,9 +637,12 @@ class FakeBlackscreen(tk.Toplevel):
         super().__init__(master=master)
         self.master = master
 
-        # Titelzeile entfernen
-        self.overrideredirect(True)
-        self.geometry("800x480")
+        if master.demo_modus:
+            self.title("FakeBackscreen")
+        else:
+            # Titelzeile entfernen
+            self.overrideredirect(True)
+            self.geometry("800x480")
         self.config(cursor="none", background=bg_color)
         self.milliseconds = seconds * 1000
         self.bind("<Button-1>", self.mausklick)
@@ -650,7 +659,8 @@ class FakeBlackscreen(tk.Toplevel):
         if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
             self.input_prev_state = GPIO.input(pinNr)
 
-        self.Timer = 0
+        self.withdraw() # Hide Window
+        self.Timer = self.milliseconds
         self.timer_countdown()
 
 
@@ -661,7 +671,6 @@ class FakeBlackscreen(tk.Toplevel):
         self.Timer = self.milliseconds
 
     def timer_countdown(self):
-
         if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
             # Retriggern wenn der Sensor Bewegung meldet (Flankenauswertung)
             input_value = GPIO.input(pinNr)
@@ -675,6 +684,7 @@ class FakeBlackscreen(tk.Toplevel):
             self.Timer = max(0, self.Timer)
 
             if self.Timer <= 0:
+                self.geometry(self.master.geometry())
                 self.deiconify() # Show again
                 self.attributes("-topmost", 1)
                 self.attributes("-topmost", 0)
