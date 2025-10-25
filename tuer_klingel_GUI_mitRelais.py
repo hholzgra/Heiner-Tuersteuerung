@@ -21,6 +21,7 @@ from BeeperSteuerung import BeeperSteuerung
 import Telegram
 
 # Logging initialisieren
+logging.basicConfig()
 log = logging.getLogger("Tuersteuerung")
 log.setLevel(logging.INFO)
 

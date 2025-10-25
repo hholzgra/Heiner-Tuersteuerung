@@ -15,6 +15,7 @@ from Settings import Settings
 import Telegram
 
 # systemd logger
+logging.basicConfig()
 log = logging.getLogger("NFC-Sensor")
 log.setLevel(logging.INFO)
 
