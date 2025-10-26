@@ -1,5 +1,4 @@
 import os
-import math
 import platform
 import pprint
 import tkinter as tk
@@ -16,8 +15,10 @@ from Settings import Settings
 
 # from PIL import ImageTk, Image
 from tkinter import PhotoImage
+
 from BeeperSteuerung import BeeperSteuerung
-import threading
+from FakeBlackscreen import FakeBlackscreen
+from BlockingWindow  import BlockingWindow
 
 # Logging initialisieren
 log = logging.getLogger("Tuersteuerung")
@@ -139,7 +140,7 @@ class GUI(tk.Tk, GuiEventProducer):
 
             if gui_event == GUI_EVENTS.KLINGEL_1:
                 # BildPopup(self, seconds=3, x_pos=event.x, y_pos=y_berechnet, bild=self.Setup_GlockenBild) # event.y ist relativ zum jeweiligen "klingelschild" 3x 160px vertikal
-                BlockingWindows(
+                BlockingWindow(
                     self,
                     seconds=3,
                     title=f"Klingel",
@@ -149,7 +150,7 @@ class GUI(tk.Tk, GuiEventProducer):
 
             elif gui_event == GUI_EVENTS.KLINGEL_2:
                 # BildPopup(self, seconds=3, x_pos=event.x, y_pos=y_berechnet, bild=self.Setup_GlockenBild) # event.y ist relativ zum jeweiligen "klingelschild" 3x 160px vertikal
-                BlockingWindows(
+                BlockingWindow(
                     self,
                     seconds=3,
                     title=f"Klingel",
@@ -159,7 +160,7 @@ class GUI(tk.Tk, GuiEventProducer):
 
             elif gui_event == GUI_EVENTS.BRIEFKASTEN:
                 # BildPopup(self, seconds=3, x_pos=event.x, y_pos=y_berechnet, bild=self.Setup_BriefBild) # event.y ist relativ zum jeweiligen "klingelschild" 3x 160px vertikal
-                BlockingWindows(
+                BlockingWindow(
                     self,
                     seconds=3,
                     title=f"Öffne Briefkasten",
@@ -364,7 +365,7 @@ class KeyPad(tk.Toplevel):
         log.debug(self.sliding_window_tuer_code)
 
         if self.sliding_window_tuer_code == self.secret_tuer_code:
-            BlockingWindows(self.master, seconds=3, title="Tuer ist offen")
+            BlockingWindow(self.master, seconds=3, title="Tuer ist offen")
             # self.master.after(5000, self.destroy)
             if self.callback_tuer_relais != None:
                 self.callback_tuer_relais()  # "Keypad Tuer Event"
@@ -384,7 +385,7 @@ class KeyPad(tk.Toplevel):
             log.debug(self.sliding_window_shutdown)
 
             if self.sliding_window_shutdown == self.secret_shutdown_code:
-                BlockingWindows(
+                BlockingWindow(
                     self.master,
                     seconds=4,
                     title="An dieser Stelle kann\n der PI heruntergefahren\n werden",
@@ -397,298 +398,10 @@ class KeyPad(tk.Toplevel):
 
         if self.try_counter >= self.secret_max_input_length:
             self.wait_window(
-                BlockingWindows(
+                BlockingWindow(
                     self, seconds=self.secret_timeout, title="Wird verarbeitet ..."
                 )
             )
             self.destroy()
-
-
-class BlockingWindows(tk.Toplevel):
-
-    def __init__(
-        self,
-        master,
-        seconds: int = 5,
-        title: str = "Wartebildschirm",
-        subtitle: str = "",
-        bild: tk.PhotoImage = None,
-        bg_color: str = "#222222",
-        fg_color: str = "#EEEEEE",
-    ) -> None:
-        super().__init__(master=master)
-        self.master = master
-        if self.master.demo_modus:
-            self.title(title)
-            self.geometry(self.master.geometry())
-        else:
-            # Titelzeile entfernen
-            self.overrideredirect(True)
-            self.geometry("800x480")
-        self.config(cursor="none", background=bg_color)
-        self.seconds = seconds
-
-        self.title = title
-
-        frame = tk.Frame(self, width=800, height=480, background=bg_color)
-        frame.place(relwidth=1.0, relheight=1.0, relx=0.5, rely=0.5, anchor="center")
-
-        # Einzeiliger Text (Bild Optional)
-        if subtitle == "":
-            label = tk.Label(
-                frame,
-                text=self.title,
-                background=bg_color,
-                foreground=fg_color,
-                font=("Helvetica 50 bold"),
-            )
-            label.place(
-                relwidth=1.0, relheight=1.0, relx=0.5, rely=0.5, anchor="center"
-            )
-
-            if bild != None:
-                label_bild = tk.Label(
-                    frame,
-                    image=bild,
-                    background=bg_color,
-                )
-                label_bild.place(
-                    width=bild.width(), height=bild.height(), x=400, y=0, anchor="n"
-                )
-
-        # Mehrzeiliger Text (Bild Optional)
-        else:
-            label = tk.Label(
-                frame,
-                text=self.title,
-                background=bg_color,
-                foreground=fg_color,
-                font=("Helvetica 50 bold"),
-            )
-            label.pack(fill="x", pady=50)
-            label2 = tk.Label(
-                frame,
-                text=subtitle.replace("  ", ""),
-                background=bg_color,
-                foreground=fg_color,
-                font=("Helvetica 40 bold"),
-            )
-            label2.pack(fill="x", pady=70)
-
-            if bild != None:
-                label_bild = tk.Label(
-                    frame,
-                    image=bild,
-                    background=bg_color,
-                )
-                label_bild.place(width=bild.width(), height=bild.height(), x=30, y=0)
-
-        self.master.after(seconds * 1000, self.destroy)
-
-
-class BildPopup(tk.Toplevel):
-
-    def __init__(
-        self, master, bild: PhotoImage, x_pos, y_pos, seconds=3, x_anim_offset_px=10
-    ) -> None:
-        super().__init__(master=master)
-        self.master = master
-        self.sidelength = bild.height() + x_anim_offset_px
-
-        if self.master.demo_modus:
-            self.title("BildPopup")
-        else:
-            # Titelzeile entfernen
-            self.overrideredirect(True)
-
-        geometry = f"{self.sidelength}x{self.sidelength}+{int(x_pos-self.sidelength/2)}+{int(y_pos-self.sidelength/2)}"
-        self.geometry(geometry)
-
-        if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
-            background_color = "#424242"  # Unter Windows Transparenz Farbe
-            self.attributes("-transparentcolor", background_color)
-        else:
-            # self.wm_attributes("-transparent", True) # Geht nicht
-            # self.config(cursor="none", bg="systemTransparent") # Geht nicht
-            background_color = "#111111"
-            pass
-
-        self.config(
-            cursor="none",
-            background=background_color,
-        )
-
-        self.seconds = seconds
-
-        # self.attributes('-alpha', 0.2)
-
-        self.frame = tk.Frame(
-            self,
-            width=self.sidelength,
-            height=self.sidelength,
-            background=background_color,
-        )
-        self.frame.pack(fill="both", expand=True)
-
-        self.label = tk.Label(
-            self.frame,
-            text=" ",
-            image=bild,
-            background=background_color,
-            foreground="#EEEEEE",
-            font=("Helvetica 50 bold"),
-        )
-        self.label.place(anchor="nw", x=0, y=0, relheight=1.0, relwidth=1.0)
-
-        # self.animation_gross = True
-        # self.animation_temp_sidelength = self.sidelength
-        self.y_pos = y_pos
-        self.x_pos = x_pos
-        self.animation_y_pos = y_pos
-        self.anim_pos_toggle = True
-        self.x_offset = 0
-        self.animation_alpha = 1.0
-        self.x_anim_offset_px = x_anim_offset_px
-        self.anim_start = time.time_ns()
-
-        self.anim_Lock = threading.Lock()
-        self.destroy_Lock = threading.Lock()
-
-        self.animate()
-        self.master.after(seconds * 1000, self.destroy)
-
-    def destroy(self) -> None:
-        """Die Locks sollen verhindern das die sich selbst aufrufende self.animation() auf ein ungueltiges Objekt zugreift"""
-        if not self.destroy_Lock.locked():
-            self.destroy_Lock.acquire()  # verhindere weitere Animationsschleifen
-
-        if self.anim_Lock.locked():  # Wait for animation to be done
-            self.master.after(200, self.destroy)
-
-        return super().destroy()
-
-    def animate(self, anim_recall_ms: int = 10, anim_range_px: int = 100):
-        """Animiert das angezeigte Bild, Lock()'s beachten"""
-        if not self.destroy_Lock.locked():
-
-            if not self.anim_Lock.locked():
-                self.anim_Lock.acquire()
-
-            # # Animation: Groesse
-            # if self.animation_gross: # groesser werden
-            #     self.animation_temp_sidelength += anim_range_px
-            #     if self.animation_temp_sidelength > self.sidelength + anim_range_px:
-            #         self.animation_gross = False
-            # else: # kleiner werden
-            #     self.animation_temp_sidelength -= anim_range_px
-            #     if self.animation_temp_sidelength < self.sidelength - anim_range_px:
-            #         self.animation_gross = True
-            # self.configure(width=self.animation_temp_sidelength, height=self.animation_temp_sidelength)
-
-            # Animation: Position
-            # Exponential Smoothing: position += (target - position) * (1 - exp(- speed * dt))
-            # siehe: https://lisyarus.github.io/blog/posts/exponential-smoothing.html
-
-            target_offset_plus = int(self.x_anim_offset_px / 2)
-            target_offset_minus = -int(self.x_anim_offset_px / 2)
-            speed_dt = 0.2
-
-            if self.anim_pos_toggle:
-                self.x_offset += (target_offset_plus - self.x_offset) * (
-                    1 - math.exp(-speed_dt)
-                )
-                if self.x_offset > target_offset_plus - 1:
-                    self.anim_pos_toggle = False
-            else:
-                self.x_offset += (target_offset_minus - self.x_offset) * (
-                    1 - math.exp(-speed_dt)
-                )
-                if self.x_offset < target_offset_minus + 1:
-                    self.anim_pos_toggle = True
-
-            self.label.place(
-                anchor="nw", x=self.x_offset, y=0, relheight=1.0, relwidth=1.0
-            )
-
-            # Animation: Alpha
-            alpha_reduction_factor = anim_recall_ms / (
-                self.seconds * 1000
-            )  # Fuer lineares Alpha in z.B. 3 Sekunden von 1.0 auf 0.0 bei 10 ms Aufrufen
-
-            self.animation_alpha = max(
-                0.0,
-                self.animation_alpha
-                - alpha_reduction_factor
-                + (time.time_ns() - self.anim_start) / self.anim_start,
-            )
-            self.attributes("-alpha", self.animation_alpha)
-            self.master.after(10, self.animate)
-        else:
-            self.anim_Lock.release()
-
-
-class FakeBlackscreen(tk.Toplevel):
-    """
-    Legt ein Vollbildfenster auf den Screen der erst durch einmaliges beruehren des Bildschirms deaktiviert wird.
-    Soll verhindern das wenn man auf einen abgeschalteten Bildschirm tippt ein Event ausloest.
-    """
-
-    def __init__(self, master, seconds: int, bg_color: str = "#000000") -> None:
-        super().__init__(master=master)
-        self.master = master
-
-        if master.demo_modus:
-            self.title("FakeBackscreen")
-        else:
-            # Titelzeile entfernen
-            self.overrideredirect(True)
-            self.geometry("800x480")
-        self.config(cursor="none", background=bg_color)
-        self.milliseconds = seconds * 1000
-        self.bind("<Button-1>", self.mausklick)
-
-        frame = tk.Frame(self, width=800, height=480, background=bg_color)
-        label = tk.Label(frame, background=bg_color)
-        label.pack(expand=True, fill="both")
-        frame.place(relwidth=1.0, relheight=1.0, relx=0.5, rely=0.5, anchor="center")
-
-        self.lift(aboveThis=master)
-        self.attributes("-topmost", 1)
-        self.attributes("-topmost", 0)
-
-        if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
-            self.input_prev_state = GPIO.input(pinNr)
-
-        self.withdraw() # Hide Window
-        self.Timer = self.milliseconds
-        self.timer_countdown()
-
-
-    def mausklick(self, event=None):
-        '''Zieht den Timer fuer den Blackscreen neu auf'''
-        # self.master.lift(aboveThis=self)
-        self.withdraw() # Hide Window
-        self.Timer = self.milliseconds
-
-    def timer_countdown(self):
-        if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
-            # Retriggern wenn der Sensor Bewegung meldet (Flankenauswertung)
-            input_value = GPIO.input(pinNr)
-            if input_value == False and self.input_prev_state == True:
-                self.withdraw() # Hide Window
-                self.Timer = self.milliseconds
-            self.input_prev_state = input_value
-
-        if self.Timer != 0:
-            self.Timer -= 100 # Aufruf Raster beachten
-            self.Timer = max(0, self.Timer)
-
-            if self.Timer <= 0:
-                self.geometry(self.master.geometry())
-                self.deiconify() # Show again
-                self.attributes("-topmost", 1)
-                self.attributes("-topmost", 0)
-        
-        self.master.after(100, self.timer_countdown)
 
 
