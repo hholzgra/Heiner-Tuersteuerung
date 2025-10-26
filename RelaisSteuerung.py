@@ -7,11 +7,14 @@ log = logging.getLogger("Tuersteuerung")
 
 class RelaisSteuerung(threading.Thread):
 
+    RELAIS_COUNT = 4
     RELAIS_1 = 0
     RELAIS_2 = 1
     RELAIS_3 = 2
     RELAIS_4 = 3
+
     DEFAULT_ANSTEUERZEIT_SEK = 1
+    ALL_OFF = 0xFF
 
     def __init__(self, stop_event: threading.Event, demo_modus=False) -> None:
         super().__init__()
@@ -23,7 +26,7 @@ class RelaisSteuerung(threading.Thread):
             0x20  # 7 bit address (will be left shifted to add the read write bit)
         )
         self.DEVICE_REG_MODE1 = 0x06
-        self.DEVICE_REG_DATA = 0xFF
+        self.DEVICE_REG_DATA = self.ALL_OFF
         if not self.demo_modus:
             import smbus
 
@@ -35,19 +38,17 @@ class RelaisSteuerung(threading.Thread):
             )
 
         # Laufzeit Timer fuer jedes der 4 Relais
-        self.Timer = [0, 0, 0, 0]
-        self.func_list_ON: list[callable] = [self.ON_1, self.ON_2, self.ON_3, self.ON_4]
-        self.func_list_OFF: list[callable] = [
-            self.OFF_1,
-            self.OFF_2,
-            self.OFF_3,
-            self.OFF_4,
-        ]
+        self.Timer        = []
+        self.func_list_ON : list[callable]  = []
+        self.func_list_OFF: list[callable]  = []
+
+        for id in range(0, self.RELAIS_COUNT):
+            self.Timer.append(0)
+            self.func_list_ON.append( lambda id=id: self.SWITCH(id, True))
+            self.func_list_OFF.append(lambda id=id: self.SWITCH(id, False))
 
     def run(self):
-
         while not self.stop_event.is_set():
-
             time.sleep(0.1)
             for i, _ in enumerate(self.Timer):
                 if self.Timer[i] > 0:
@@ -63,69 +64,21 @@ class RelaisSteuerung(threading.Thread):
         self, relais_nummer: int, Ansteuerzeit_Sek: int = DEFAULT_ANSTEUERZEIT_SEK
     ) -> None:
         """Schaltet ein Relais ein und zieht den Abschalttimer wieder auf"""
+        log.debug(f"Starte Nr {relais_nummer} mit {Ansteuerzeit_Sek} Sek")
         self.Timer[relais_nummer] = Ansteuerzeit_Sek * 10  # Skalierung auf 100ms Raster
         self.func_list_ON[relais_nummer]()
-        log.debug(f"Starte Nr {relais_nummer} mit {Ansteuerzeit_Sek} Sek")
         log.debug(bin(self.DEVICE_REG_DATA))
-
-    def fake_ON(self):
-        pass
 
     def ALLOFF(self):
         for func_off in self.func_list_OFF:
             func_off()
 
-    def ON_1(self) -> None:
-        self.DEVICE_REG_DATA &= ~(0x1 << 0)
-        if not self.demo_modus:
-            self.bus.write_byte_data(
-                self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA
-            )
-
-    def ON_2(self) -> None:
-        self.DEVICE_REG_DATA &= ~(0x1 << 1)
-        if not self.demo_modus:
-            self.bus.write_byte_data(
-                self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA
-            )
-
-    def ON_3(self) -> None:
-        self.DEVICE_REG_DATA &= ~(0x1 << 2)
-        if not self.demo_modus:
-            self.bus.write_byte_data(
-                self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA
-            )
-
-    def ON_4(self) -> None:
-        self.DEVICE_REG_DATA &= ~(0x1 << 3)
-        if not self.demo_modus:
-            self.bus.write_byte_data(
-                self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA
-            )
-
-    def OFF_1(self) -> None:
-        self.DEVICE_REG_DATA |= 0x1 << 0
-        if not self.demo_modus:
-            self.bus.write_byte_data(
-                self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA
-            )
-
-    def OFF_2(self) -> None:
-        self.DEVICE_REG_DATA |= 0x1 << 1
-        if not self.demo_modus:
-            self.bus.write_byte_data(
-                self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA
-            )
-
-    def OFF_3(self) -> None:
-        self.DEVICE_REG_DATA |= 0x1 << 2
-        if not self.demo_modus:
-            self.bus.write_byte_data(
-                self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA
-            )
-
-    def OFF_4(self) -> None:
-        self.DEVICE_REG_DATA |= 0x1 << 3
+    def SWITCH(self, relais_nr, state_on) -> None:
+        log.debug("Relais #%d switch %s" % (relais_nr + 1, "ON" if state_on else "OFF"))
+        if state_on:
+            self.DEVICE_REG_DATA &= ~(0x1 << relais_nr)
+        else: # off
+            self.DEVICE_REG_DATA |= 0x1 << relais_nr
         if not self.demo_modus:
             self.bus.write_byte_data(
                 self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA
