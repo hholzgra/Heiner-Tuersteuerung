@@ -1,4 +1,4 @@
-# Türsteuerungs-Zugangscodes
+ Türsteuerungs-Zugangscodes
 [tuer]
 zugangs_code   = [  1,  2,  3,  4 ]
 herunterfahren = [ 13, 12, 11, 10 ]
@@ -10,8 +10,8 @@ CHAT_ID = ""
 
 # Namen für die einzelnen Klingelschilder
 [namen] 
-oben  = "Konrad Stupenburg"
-mitte = "Paul Niemöser"
+oben  = "Wohnung oben"
+mitte = "Wohnung unten"
 unten = "Briefkasten öffnen"
 
 # NFC-Tokens zur Türöffnung
@@ -21,3 +21,12 @@ tokens = [
            "12345678", # Paul
 	 ]
 
+# GPI Pinbelegung
+[gpio]
+beeper    = 15
+backlight = 19
+
+
+# Screensaver etc.
+[screen]
+timeout = 20 # Sekunden

@@ -3,6 +3,10 @@ import time
 import platform
 import logging
 
+from Settings import Settings
+
+settings = Settings()
+
 # Logging initialisieren
 log = logging.getLogger("Tuersteuerung")
 
@@ -19,7 +23,8 @@ class BeeperSteuerung(threading.Thread):
         self.demo_modus = demo_modus
         self.stop_event = stop_event
 
-        self.BeeperpinNr = 15
+        pins = settings.get("gpio")
+        self.BeeperpinNr = pins["beeper"] or 15
 
         if not self.demo_modus:
             GPIO.setmode(GPIO.BOARD)

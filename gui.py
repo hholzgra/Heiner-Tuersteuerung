@@ -10,11 +10,11 @@ from enum import Enum
 from pathlib import Path
 import sys
 import logging
-from Settings import Settings
 
 # from PIL import ImageTk, Image
 from tkinter import PhotoImage
 
+from Settings        import Settings
 from BeeperSteuerung import BeeperSteuerung
 from FakeBlackscreen import FakeBlackscreen
 from BlockingWindow  import BlockingWindow
@@ -23,9 +23,13 @@ from KeyPad          import KeyPad
 # Logging initialisieren
 log = logging.getLogger("Tuersteuerung")
 
+settings = Settings()
+
 if platform.uname().system == "Linux" and platform.uname().node == "raspberrypi":
     import RPi.GPIO as GPIO
-    pinNr = 19
+
+    pins = settings.get("gpio")
+    pinNr = pins["backlight"] or 19
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(pinNr, GPIO.IN, pull_up_down=GPIO.PUD_UP)    # Achtung dies Setup wird auch vom BacklighControll Service gemacht!!!
 
@@ -86,13 +90,11 @@ class GUI(tk.Tk, GuiEventProducer):
 
         self.keypad = None
 
-        settings = Settings()
-
         namen = settings.get("namen")
         self.Setup_list_namen: list = [
-            namen["oben"],
-            namen["mitte"],
-            namen["unten"],
+            namen["oben"]  or "Klingel oben",
+            namen["mitte"] or "Klingel mitte",
+            namen["unten"] or "Briefkasten öffnen",
         ]
 
         secrets = settings.get("tuer")
@@ -112,7 +114,8 @@ class GUI(tk.Tk, GuiEventProducer):
 
         self.build()
 
-        self.black_screen = FakeBlackscreen(self, seconds=20)
+        screen_settings = settings.get("screen")
+        self.black_screen = FakeBlackscreen(self, screen_settings["timeout"] or 20)
 
     def register(self, consumer: GuiEventConsumer):
         self.ConsumerList.append(consumer)
